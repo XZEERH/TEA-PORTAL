@@ -1,197 +1,1188 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> TEA 404 ERROR - Lost in Space</title>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Rajdhani', sans-serif;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Portal TEA — Quiz Astronomi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #000005;
+    --deep: #05060f;
+    --card-bg: rgba(8,12,28,0.72);
+    --card-border: rgba(80,160,255,0.18);
+    --glow-blue: #3a8fff;
+    --glow-cyan: #00d4ff;
+    --white: #e8f0ff;
+    --dim: #8899bb;
+    --green: #00e676;
+    --red: #ff3d57;
+    --gold: #ffd740;
+    --font-head: 'Orbitron', monospace;
+    --font-body: 'Exo 2', sans-serif;
+    --transition: cubic-bezier(0.23, 1, 0.32, 1);
+  }
 
-        body {
-            background-color: #000;
-            color: #fff;
-            overflow: hidden; /* Mencegah scroll bar karena ini halaman error statis */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-        }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* Starfield Animation di Background */
-        #starfield {
-            position: fixed;
-            inset: 0;
-            z-index: -1;
-            background: #000;
-        }
+  html, body {
+    width: 100%; min-height: 100vh;
+    background: var(--black);
+    color: var(--white);
+    font-family: var(--font-body);
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
 
-        /* Container Konten 404 */
-        .error-container {
-            text-align: center;
-            max-width: 600px;
-            padding: 40px 20px;
-            z-index: 10;
-            animation: fadeIn 1.5s ease-out;
-        }
+  /* ═══════════════════════════════════ STARFIELD */
+  #starfield {
+    position: fixed; inset: 0; z-index: 0;
+    pointer-events: none; overflow: hidden;
+  }
+  .star {
+    position: absolute; border-radius: 50%;
+    background: #fff;
+    animation: twinkle var(--td) ease-in-out infinite, drift var(--dd) linear infinite;
+    opacity: 0;
+  }
+  @keyframes twinkle {
+    0%,100% { opacity: 0; transform: scale(0.5); }
+    50% { opacity: var(--op); transform: scale(1); }
+  }
+  @keyframes drift {
+    from { transform: translateY(0); }
+    to { transform: translateY(100vh); }
+  }
 
-        /* Logo TEA dengan efek Float (Melayang) dan hilangkan background hitam */
-        .error-logo {
-            width: 130px;
-            height: 130px;
-            filter: grayscale(1);
-            mix-blend-mode: screen;
-            margin-bottom: 20px;
-            animation: float 6s ease-in-out infinite;
-        }
+  /* ═══════════════════════════════════ NEBULA BG */
+  .nebula {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 30%, rgba(30,60,180,0.13) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 50% at 80% 70%, rgba(0,180,255,0.09) 0%, transparent 60%),
+      radial-gradient(ellipse 80% 60% at 50% 50%, rgba(5,10,30,0.5) 0%, transparent 100%);
+  }
 
-        /* Teks Error */
-        .error-title {
-            font-size: 55px;
-            letter-spacing: 12px;
-            font-weight: 800;
-            margin-bottom: 15px;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
-        }
+  /* ═══════════════════════════════════ PAGES */
+  .page {
+    position: fixed; inset: 0; z-index: 1;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 20px;
+    transition: opacity 0.5s var(--transition), transform 0.5s var(--transition);
+  }
+  .page.hidden {
+    opacity: 0; pointer-events: none;
+    transform: scale(0.96) translateY(12px);
+  }
 
-        .error-desc {
-            font-size: 16px;
-            line-height: 1.6;
-            color: #aaa;
-            margin-bottom: 40px;
-            letter-spacing: 2px;
-        }
+  /* ═══════════════════════════════════ GRID LINES */
+  .grid-overlay {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(58,143,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(58,143,255,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
 
-        /* Tombol Kembali */
-        .btn-kembali {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background: transparent;
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 15px 35px;
-            text-transform: uppercase;
-            letter-spacing: 5px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.4s ease;
-            border-radius: 30px;
-            backdrop-filter: blur(5px);
-            text-decoration: none;
-        }
+  /* ═══════════════════════════════════ LOGO / ICON */
+  .astro-icon {
+    width: 72px; height: 72px; margin-bottom: 28px;
+    filter: drop-shadow(0 0 16px var(--glow-blue));
+    animation: orbit-pulse 3s ease-in-out infinite;
+  }
+  @keyframes orbit-pulse {
+    0%,100% { filter: drop-shadow(0 0 16px var(--glow-blue)); transform: scale(1); }
+    50% { filter: drop-shadow(0 0 28px var(--glow-cyan)); transform: scale(1.05); }
+  }
 
-        .btn-kembali:hover {
-            background: #fff;
-            color: #000;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
-            transform: scale(1.05);
-        }
+  /* ═══════════════════════════════════ HOME PAGE */
+  .home-card {
+    max-width: 520px; width: 100%;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+    padding: 44px 36px 40px;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    box-shadow: 0 0 60px rgba(58,143,255,0.08), 0 24px 80px rgba(0,0,0,0.6);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .home-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--glow-blue), var(--glow-cyan), var(--glow-blue), transparent);
+    animation: scan-line 3s linear infinite;
+  }
+  @keyframes scan-line {
+    0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; }
+  }
 
-        /* Animasi */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+  .portal-label {
+    font-family: var(--font-head);
+    font-size: 11px; letter-spacing: 4px;
+    color: var(--glow-cyan);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    opacity: 0.7;
+  }
+  .portal-title {
+    font-family: var(--font-head);
+    font-size: clamp(22px, 5vw, 30px);
+    font-weight: 900;
+    background: linear-gradient(135deg, #fff 0%, var(--glow-cyan) 50%, var(--glow-blue) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 28px;
+    line-height: 1.3;
+    text-shadow: none;
+  }
+  .home-text {
+    color: var(--dim);
+    font-size: 15px;
+    line-height: 1.75;
+    font-weight: 300;
+    margin-bottom: 36px;
+  }
+  .home-text strong {
+    color: var(--white);
+    font-weight: 600;
+  }
 
-        @keyframes float {
-            0% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-15px) rotate(2deg); }
-            100% { transform: translateY(0px) rotate(0deg); }
-        }
+  .btn-start {
+    width: 100%;
+    background: linear-gradient(135deg, rgba(58,143,255,0.15), rgba(0,212,255,0.1));
+    border: 1px solid rgba(58,143,255,0.5);
+    border-radius: 16px;
+    padding: 22px;
+    color: var(--white);
+    font-family: var(--font-head);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s var(--transition);
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+  }
+  .btn-start::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(58,143,255,0.3), rgba(0,212,255,0.2));
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .btn-start:hover::before, .btn-start:active::before { opacity: 1; }
+  .btn-start:hover {
+    border-color: var(--glow-cyan);
+    box-shadow: 0 0 30px rgba(0,212,255,0.25), 0 0 60px rgba(58,143,255,0.1);
+    transform: translateY(-2px);
+  }
+  .btn-start:active { transform: translateY(0) scale(0.98); }
+  .btn-start .rocket { font-size: 22px; animation: rocket-bob 1.5s ease-in-out infinite; }
+  @keyframes rocket-bob {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
 
-        /* Garis pemisah neon kecil */
-        .separator {
-            width: 50px;
-            height: 2px;
-            background: #fff;
-            margin: 0 auto 20px;
-            box-shadow: 0 0 10px #fff;
-        }
-    </style>
+  /* ═══════════════════════════════════ LOADING PAGE */
+  .loading-wrap {
+    display: flex; flex-direction: column;
+    align-items: center; gap: 32px;
+    max-width: 360px; width: 100%;
+  }
+  .brain-container {
+    width: 120px; height: 120px;
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .brain-ring {
+    position: absolute; inset: 0; border-radius: 50%;
+    border: 2px solid transparent;
+    border-top-color: var(--glow-cyan);
+    border-right-color: rgba(58,143,255,0.3);
+    animation: spin 1.2s linear infinite;
+  }
+  .brain-ring-2 {
+    position: absolute; inset: 12px; border-radius: 50%;
+    border: 1px solid transparent;
+    border-bottom-color: var(--glow-blue);
+    border-left-color: rgba(0,212,255,0.3);
+    animation: spin 2s linear infinite reverse;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .brain-svg {
+    width: 60px; height: 60px;
+    filter: drop-shadow(0 0 12px var(--glow-cyan));
+  }
+
+  .loading-title {
+    font-family: var(--font-head);
+    font-size: 13px; letter-spacing: 3px;
+    color: var(--glow-cyan);
+    text-align: center;
+  }
+
+  .progress-wrap { width: 100%; }
+  .progress-bar-outer {
+    width: 100%; height: 6px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 10px; overflow: hidden;
+    border: 1px solid rgba(58,143,255,0.15);
+    margin-bottom: 10px;
+  }
+  .progress-bar-inner {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--glow-blue), var(--glow-cyan));
+    border-radius: 10px;
+    box-shadow: 0 0 10px var(--glow-cyan);
+    transition: width 0.05s linear;
+  }
+  .progress-pct {
+    font-family: var(--font-head);
+    font-size: 28px; font-weight: 900;
+    text-align: center;
+    background: linear-gradient(90deg, var(--glow-blue), var(--glow-cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ═══════════════════════════════════ QUIZ PAGE */
+  #page-quiz {
+    justify-content: flex-start;
+    padding-top: 20px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .quiz-inner {
+    width: 100%; max-width: 560px;
+    display: flex; flex-direction: column; gap: 16px;
+    padding-bottom: 30px;
+  }
+
+  /* HEADER BAR */
+  .quiz-header {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 14px 20px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 12px;
+  }
+  .q-counter {
+    font-family: var(--font-head);
+    font-size: 12px; letter-spacing: 1.5px;
+    color: var(--dim);
+    text-align: left;
+  }
+  .q-counter span { color: var(--glow-cyan); font-size: 16px; font-weight: 700; }
+
+  .timer-wrap {
+    display: flex; flex-direction: column; align-items: center;
+    position: relative;
+  }
+  .timer-circle {
+    width: 54px; height: 54px;
+    position: relative;
+  }
+  .timer-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .timer-track { fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 3; }
+  .timer-prog { fill: none; stroke: var(--glow-cyan); stroke-width: 3;
+    stroke-linecap: round; stroke-dasharray: 138; stroke-dashoffset: 0;
+    transition: stroke-dashoffset 1s linear, stroke 0.3s;
+  }
+  .timer-text {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-head); font-size: 16px; font-weight: 700;
+    color: var(--white);
+  }
+
+  .score-disp {
+    text-align: right;
+    font-family: var(--font-head); font-size: 12px;
+    color: var(--dim);
+    letter-spacing: 1px;
+  }
+  .score-disp .s-correct { color: var(--green); font-size: 15px; font-weight: 700; }
+  .score-disp .s-wrong { color: var(--red); font-size: 15px; font-weight: 700; }
+
+  /* QUESTION CARD */
+  .q-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 28px 24px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+    transition: border-color 0.3s, box-shadow 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .q-card.correct {
+    border-color: var(--green);
+    box-shadow: 0 0 40px rgba(0,230,118,0.2), 0 8px 40px rgba(0,0,0,0.4);
+  }
+  .q-card.wrong {
+    border-color: var(--red);
+    box-shadow: 0 0 40px rgba(255,61,87,0.2), 0 8px 40px rgba(0,0,0,0.4);
+  }
+
+  .q-category {
+    font-size: 10px; letter-spacing: 3px;
+    color: var(--glow-cyan); opacity: 0.7;
+    text-transform: uppercase; margin-bottom: 12px;
+    font-family: var(--font-head);
+  }
+  .q-text {
+    font-size: clamp(14px, 3.5vw, 17px);
+    font-weight: 400; line-height: 1.65;
+    color: var(--white); margin-bottom: 22px;
+  }
+
+  .options-grid {
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .opt-btn {
+    width: 100%;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(80,160,255,0.15);
+    border-radius: 12px;
+    padding: 14px 18px;
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size: 14px; font-weight: 400;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s var(--transition);
+    display: flex; align-items: flex-start; gap: 12px;
+    line-height: 1.45;
+  }
+  .opt-btn .opt-label {
+    font-family: var(--font-head);
+    font-size: 12px; font-weight: 700;
+    color: var(--glow-cyan);
+    min-width: 18px; margin-top: 1px;
+    flex-shrink: 0;
+  }
+  .opt-btn:hover:not(:disabled) {
+    background: rgba(58,143,255,0.1);
+    border-color: rgba(58,143,255,0.4);
+    transform: translateX(4px);
+  }
+  .opt-btn:active:not(:disabled) { transform: translateX(2px) scale(0.99); }
+  .opt-btn.selected-correct {
+    background: rgba(0,230,118,0.1);
+    border-color: var(--green);
+    color: var(--green);
+  }
+  .opt-btn.selected-correct .opt-label { color: var(--green); }
+  .opt-btn.selected-wrong {
+    background: rgba(255,61,87,0.1);
+    border-color: var(--red);
+    color: var(--red);
+  }
+  .opt-btn.selected-wrong .opt-label { color: var(--red); }
+  .opt-btn.reveal-correct {
+    background: rgba(0,230,118,0.07);
+    border-color: rgba(0,230,118,0.4);
+  }
+  .opt-btn:disabled { cursor: default; }
+
+  /* ═══════════════════════════════════ RESULT PAGE */
+  .result-card {
+    max-width: 520px; width: 100%;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+    padding: 44px 32px 40px;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    box-shadow: 0 0 80px rgba(58,143,255,0.1), 0 24px 80px rgba(0,0,0,0.7);
+    text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .result-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), var(--glow-cyan), var(--gold), transparent);
+  }
+
+  .result-title {
+    font-family: var(--font-head);
+    font-size: 13px; letter-spacing: 4px;
+    color: var(--gold); margin-bottom: 24px;
+  }
+
+  .result-pct-wrap { margin-bottom: 8px; }
+  .result-pct {
+    font-family: var(--font-head);
+    font-size: clamp(56px, 18vw, 88px);
+    font-weight: 900; line-height: 1;
+    background: linear-gradient(135deg, #fff 0%, var(--glow-cyan) 40%, var(--glow-blue) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 30px rgba(0,212,255,0.4));
+  }
+  .result-pct-label {
+    font-family: var(--font-head);
+    font-size: 12px; letter-spacing: 3px;
+    color: var(--dim); margin-bottom: 28px;
+  }
+
+  .result-stats {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 12px; margin-bottom: 24px;
+  }
+  .stat-box {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(80,160,255,0.1);
+    border-radius: 14px; padding: 16px 12px;
+  }
+  .stat-box .stat-val {
+    font-family: var(--font-head); font-size: 28px; font-weight: 900;
+    margin-bottom: 4px;
+  }
+  .stat-box .stat-val.green { color: var(--green); }
+  .stat-box .stat-val.red { color: var(--red); }
+  .stat-box .stat-lbl {
+    font-size: 11px; letter-spacing: 1.5px;
+    color: var(--dim); text-transform: uppercase;
+  }
+
+  .rank-box {
+    background: linear-gradient(135deg, rgba(58,143,255,0.08), rgba(0,212,255,0.05));
+    border: 1px solid rgba(58,143,255,0.2);
+    border-radius: 16px; padding: 18px 20px;
+    margin-bottom: 32px;
+  }
+  .rank-label {
+    font-size: 10px; letter-spacing: 3px;
+    color: var(--glow-cyan); margin-bottom: 6px;
+    text-transform: uppercase; font-family: var(--font-head);
+  }
+  .rank-name {
+    font-family: var(--font-head); font-size: clamp(15px, 4vw, 20px);
+    font-weight: 700; color: var(--white);
+  }
+
+  .result-btns { display: flex; flex-direction: column; gap: 12px; }
+  .btn-secondary {
+    width: 100%; background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(80,160,255,0.25);
+    border-radius: 12px; padding: 16px;
+    color: var(--dim); font-family: var(--font-head);
+    font-size: 12px; letter-spacing: 2px;
+    cursor: pointer; transition: all 0.25s var(--transition);
+  }
+  .btn-secondary:hover { border-color: rgba(80,160,255,0.5); color: var(--white); background: rgba(255,255,255,0.07); }
+  .btn-primary {
+    width: 100%;
+    background: linear-gradient(135deg, rgba(58,143,255,0.2), rgba(0,212,255,0.15));
+    border: 1px solid rgba(0,212,255,0.4);
+    border-radius: 12px; padding: 18px;
+    color: var(--white); font-family: var(--font-head);
+    font-size: 13px; letter-spacing: 2.5px;
+    cursor: pointer; transition: all 0.25s var(--transition);
+  }
+  .btn-primary:hover {
+    box-shadow: 0 0 30px rgba(0,212,255,0.2);
+    border-color: var(--glow-cyan);
+    transform: translateY(-1px);
+  }
+
+  /* ═══════════════════════════════════ SCAN ANIM */
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .anim-in { animation: fadeSlideUp 0.5s var(--transition) both; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(58,143,255,0.3); border-radius: 4px; }
+</style>
 </head>
 <body>
 
-    <!-- Canvas Starfield Latar Belakang -->
-    <canvas id="starfield"></canvas>
+<!-- Starfield -->
+<div id="starfield"></div>
+<div class="nebula"></div>
+<div class="grid-overlay"></div>
 
-    <!-- Konten Error 404 -->
-    <div class="error-container">
-        
-        <!-- LOGO ABSOLUT: Pasti muncul meskipun file ini ditaruh di dalam folder pages/ atau folder lain -->
-        <img src="https://xzeerh.github.io/PORTAL-TEA/assets/favicon-tea.jpg" class="error-logo" alt="TEA Logo" onerror="this.src='https://i.ibb.co/L5Mv1Ww/saturn-svgrepo-com.png'">
-        
-        <!-- Tulisan 404 -->
-        <h1 class="error-title">404 ERROR</h1>
-        <div class="separator"></div>
+<!-- ═══ PAGE: HOME ═══ -->
+<div class="page" id="page-home">
+  <svg class="astro-icon" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="36" cy="36" r="34" stroke="#3a8fff" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.5"/>
+    <circle cx="36" cy="36" r="26" stroke="#00d4ff" stroke-width="1" opacity="0.3"/>
+    <ellipse cx="36" cy="36" rx="36" ry="12" stroke="#3a8fff" stroke-width="1.2" opacity="0.4"/>
+    <circle cx="36" cy="36" r="10" fill="rgba(58,143,255,0.15)" stroke="#00d4ff" stroke-width="1.5"/>
+    <circle cx="36" cy="36" r="5" fill="#00d4ff" opacity="0.8"/>
+    <circle cx="62" cy="36" r="3" fill="#3a8fff"/>
+    <circle cx="10" cy="36" r="3" fill="#3a8fff"/>
+  </svg>
 
-        <!-- Deskripsi Tersesat -->
-        <p class="error-desc">
-            "Heyy!! Kamu telah keluar terlalu jauh dari galaksi kami, cakrawala yang kamu cari saat ini blom ada atau telah menghilang masuk ke black hole, silahkan kembali lagi ke galaksi kami!"
-        </p>
+  <div class="home-card anim-in">
+    <div class="portal-label">Portal TEA</div>
+    <div class="portal-title">Quiz Astronomi<br>Alam Semesta</div>
+    <p class="home-text">
+      <strong>Halo para pecinta alam semesta!</strong><br><br>
+      Tunjukkin jiwa pecinta alam semesta kalian dengan cara tes menjawab soalan berikut.<br><br>
+      Udah siap? Tekan mulai untuk mengetes jiwa pecinta alam semesta kalian!
+    </p>
+    <button class="btn-start" id="btn-start">
+      <span class="rocket">🚀</span>
+      MULAI
+    </button>
+  </div>
+</div>
 
-        <!-- Tombol Kembali Absolut -->
-        <a href="https://xzeerh.github.io/PORTAL-TEA/" class="btn-kembali" onclick="goBack(event)">
-            KEMBALI &rarr;
-        </a>
+<!-- ═══ PAGE: LOADING ═══ -->
+<div class="page hidden" id="page-loading">
+  <div class="loading-wrap">
+    <div class="brain-container">
+      <div class="brain-ring"></div>
+      <div class="brain-ring-2"></div>
+      <svg class="brain-svg" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Futuristic brain / AI core icon -->
+        <circle cx="30" cy="30" r="22" stroke="#00d4ff" stroke-width="1.5" opacity="0.6"/>
+        <path d="M18 26c0-6.627 5.373-12 12-12s12 5.373 12 12c0 3.5-1.5 6.65-3.9 8.85" stroke="#3a8fff" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M18 26c0 3.5 1.5 6.65 3.9 8.85" stroke="#00d4ff" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M22 34c1.5 3 4.5 5 8 5s6.5-2 8-5" stroke="#3a8fff" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="30" cy="30" r="4" fill="rgba(0,212,255,0.2)" stroke="#00d4ff" stroke-width="1.2"/>
+        <circle cx="30" cy="30" r="2" fill="#00d4ff"/>
+        <line x1="30" y1="14" x2="30" y2="10" stroke="#00d4ff" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+        <line x1="42" y1="18" x2="45" y2="15" stroke="#3a8fff" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+        <line x1="42" y1="34" x2="46" y2="36" stroke="#3a8fff" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+        <line x1="18" y1="18" x2="15" y2="15" stroke="#3a8fff" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+        <line x1="18" y1="34" x2="14" y2="36" stroke="#3a8fff" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+    </div>
+    <div class="loading-title">Mempersiapkan sistem astronomi...</div>
+    <div class="progress-wrap">
+      <div class="progress-bar-outer">
+        <div class="progress-bar-inner" id="prog-bar"></div>
+      </div>
+      <div class="progress-pct" id="prog-pct">0%</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PAGE: QUIZ ═══ -->
+<div class="page hidden" id="page-quiz">
+  <div class="quiz-inner">
+    <!-- Header -->
+    <div class="quiz-header anim-in">
+      <div class="q-counter">SOAL<br><span id="q-num">1</span> / 20</div>
+      <div class="timer-wrap">
+        <div class="timer-circle">
+          <svg class="timer-svg" viewBox="0 0 54 54">
+            <circle class="timer-track" cx="27" cy="27" r="22"/>
+            <circle class="timer-prog" id="timer-prog" cx="27" cy="27" r="22"/>
+          </svg>
+          <div class="timer-text" id="timer-text">30</div>
+        </div>
+      </div>
+      <div class="score-disp">
+        ✅ <span class="s-correct" id="s-correct">0</span><br>
+        ❌ <span class="s-wrong" id="s-wrong">0</span>
+      </div>
     </div>
 
-    <!-- SCRIPT ANIMASI BINTANG -->
-    <script>
-        // Logika Starfield
-        const canvas = document.getElementById('starfield');
-        const ctx = canvas.getContext('2d');
-        const starData = new Array();
+    <!-- Question Card -->
+    <div class="q-card anim-in" id="q-card">
+      <div class="q-category" id="q-cat"></div>
+      <div class="q-text" id="q-text"></div>
+      <div class="options-grid" id="options-grid"></div>
+    </div>
+  </div>
+</div>
 
-        function initStars() {
-            canvas.width = window.innerWidth; 
-            canvas.height = window.innerHeight;
-            starData.length = 0; 
-            for(let i=0; i<150; i++) {
-                starData.push({ 
-                    x: Math.random() * canvas.width, 
-                    y: Math.random() * canvas.height, 
-                    s: Math.random() * 1.5 
-                });
-            }
-        }
+<!-- ═══ PAGE: RESULT ═══ -->
+<div class="page hidden" id="page-result">
+  <div class="result-card anim-in">
+    <div class="result-title">🎯 HASIL QUIZ</div>
+    <div class="result-pct-wrap">
+      <div class="result-pct" id="res-pct">0%</div>
+    </div>
+    <div class="result-pct-label">IQ ASTRONOMI</div>
+    <div class="result-stats">
+      <div class="stat-box">
+        <div class="stat-val green" id="res-correct">0</div>
+        <div class="stat-lbl">✅ Benar</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val red" id="res-wrong">0</div>
+        <div class="stat-lbl">❌ Salah</div>
+      </div>
+    </div>
+    <div class="rank-box">
+      <div class="rank-label">⭐ Tingkat Pengetahuan</div>
+      <div class="rank-name" id="res-rank"></div>
+    </div>
+    <div class="result-btns">
+      <button class="btn-primary" id="btn-restart">🚀 Mulai Sekali Lagi</button>
+      <button class="btn-secondary" id="btn-home">Kembali ke Utama Quiz</button>
+    </div>
+  </div>
+</div>
 
-        function drawStars() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "white";
-            for(let i=0; i<starData.length; i++) {
-                let s = starData[i];
-                ctx.beginPath(); 
-                ctx.arc(s.x, s.y, s.s, 0, Math.PI*2); 
-                ctx.fill(); 
-                s.y += 0.2; 
-                if(s.y > canvas.height) s.y = 0;
-            }
-            requestAnimationFrame(drawStars);
-        }
+<script>
+// ═══════════════════════════════════════════════════
+// STARFIELD
+// ═══════════════════════════════════════════════════
+(function() {
+  const sf = document.getElementById('starfield');
+  const N = 160;
+  for (let i = 0; i < N; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const sz = Math.random() * 2.5 + 0.5;
+    const x = Math.random() * 100;
+    const startY = Math.random() * 100;
+    const td = (Math.random() * 3 + 2).toFixed(1) + 's';
+    const dd = (Math.random() * 60 + 40).toFixed(0) + 's';
+    const op = (Math.random() * 0.7 + 0.2).toFixed(2);
+    s.style.cssText = `
+      width:${sz}px; height:${sz}px;
+      left:${x}%;
+      top:${startY}%;
+      --td:${td}; --dd:${dd}; --op:${op};
+      animation-delay: ${(Math.random()*5).toFixed(1)}s, ${(Math.random()*20).toFixed(1)}s;
+    `;
+    sf.appendChild(s);
+  }
+})();
 
-        // Auto-resize canvas ketika layar berubah ukuran
-        window.addEventListener('resize', initStars);
+// ═══════════════════════════════════════════════════
+// AUDIO
+// ═══════════════════════════════════════════════════
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let _actx;
+function getACtx() {
+  if (!_actx) _actx = new AudioCtx();
+  return _actx;
+}
 
-        initStars(); 
-        drawStars();
+function playCorrect() {
+  try {
+    const ctx = getACtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(1320, ctx.currentTime + 0.08);
+    gain.gain.setValueAtTime(0.4, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.35);
+  } catch(e) {}
+}
 
-        // Fungsi Tombol Kembali Pintar
-        function goBack(e) {
-            e.preventDefault();
-            // Jika ada riwayat sebelumnya, gunakan history back
-            if(window.history.length > 1 && document.referrer.includes(window.location.host)) {
-                window.history.back();
-            } else {
-                // Jika user langsung direct link ke error, paksa balik ke index utama Github kamu
-                window.location.href = 'https://xzeerh.github.io/PORTAL-TEA/'; 
-            }
-        }
-    </script>
+function playWrong() {
+  try {
+    const ctx = getACtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(200, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.3);
+    gain.gain.setValueAtTime(0.35, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.35);
+  } catch(e) {}
+}
+
+function vibrate() {
+  try { if (navigator.vibrate) navigator.vibrate([80, 30, 80]); } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════════
+// PAGE NAV
+// ═══════════════════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => {
+    if (p.id === id) { p.classList.remove('hidden'); }
+    else { p.classList.add('hidden'); }
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// DATABASE — 300 SOAL
+// ═══════════════════════════════════════════════════
+const DB = [
+// ─── TATA SURYA ───────────────────────────────────
+{cat:"Tata Surya",q:"Planet manakah yang memiliki jumlah bulan terbanyak di tata surya?",A:"Jupiter",B:"Saturn",C:"Uranus",D:"Neptunus",ans:"B"},
+{cat:"Tata Surya",q:"Berapa jarak rata-rata Bumi dari Matahari?",A:"100 juta km",B:"150 juta km",C:"200 juta km",D:"250 juta km",ans:"B"},
+{cat:"Tata Surya",q:"Sabuk asteroid tata surya terletak di antara planet?",A:"Mars dan Jupiter",B:"Jupiter dan Saturnus",C:"Bumi dan Mars",D:"Saturnus dan Uranus",ans:"A"},
+{cat:"Tata Surya",q:"Planet mana yang tidak memiliki bulan alami?",A:"Mars",B:"Jupiter",C:"Venus",D:"Saturnus",ans:"C"},
+{cat:"Tata Surya",q:"Awan Oort adalah daerah yang diyakini menjadi asal dari?",A:"Asteroid",B:"Planet kerdil",C:"Komet",D:"Meteorit",ans:"C"},
+{cat:"Tata Surya",q:"Planet manakah yang berotasi paling lambat di tata surya?",A:"Mars",B:"Venus",C:"Merkurius",D:"Neptunus",ans:"B"},
+{cat:"Tata Surya",q:"Sabuk Kuiper terletak di luar orbit planet?",A:"Saturnus",B:"Uranus",C:"Neptunus",D:"Jupiter",ans:"C"},
+{cat:"Tata Surya",q:"Tata surya kita berada di galaksi?",A:"Andromeda",B:"Triangulum",C:"Bimasakti",D:"Sombrero",ans:"C"},
+{cat:"Tata Surya",q:"Planet mana yang memiliki cincin paling terlihat?",A:"Jupiter",B:"Uranus",C:"Neptunus",D:"Saturnus",ans:"D"},
+{cat:"Tata Surya",q:"Berapa lama cahaya Matahari mencapai Bumi?",A:"8 detik",B:"8 menit",C:"80 menit",D:"8 jam",ans:"B"},
+{cat:"Tata Surya",q:"Apa nama titik terjauh Bumi dari Matahari?",A:"Perihelion",B:"Aphelion",C:"Apogee",D:"Perigee",ans:"B"},
+{cat:"Tata Surya",q:"Apa nama titik terdekat Bumi dari Matahari?",A:"Aphelion",B:"Perihelion",C:"Perigee",D:"Apogee",ans:"B"},
+{cat:"Tata Surya",q:"Planet mana yang ditemukan pertama kali menggunakan teleskop matematika sebelum diamati?",A:"Uranus",B:"Neptunus",C:"Saturnus",D:"Pluto",ans:"B"},
+{cat:"Tata Surya",q:"Merkurius menyelesaikan satu orbit Matahari dalam?",A:"58 hari",B:"88 hari",C:"120 hari",D:"365 hari",ans:"B"},
+{cat:"Tata Surya",q:"Apa sebutan objek tata surya yang mengorbit Matahari tapi bukan planet atau bulan?",A:"Komet",B:"Benda langit kecil",C:"Satelit",D:"Nebula",ans:"B"},
+{cat:"Tata Surya",q:"Berapa jumlah planet resmi di tata surya saat ini?",A:"7",B:"8",C:"9",D:"10",ans:"B"},
+{cat:"Tata Surya",q:"Planet katai Ceres terletak di?",A:"Sabuk Kuiper",B:"Awan Oort",C:"Sabuk Asteroid",D:"Di luar Neptunus",ans:"C"},
+{cat:"Tata Surya",q:"Apa yang dimaksud dengan 'ekuinoks'?",A:"Titik balik matahari",B:"Hari ketika siang dan malam sama panjang",C:"Gerhana matahari total",D:"Orbit Bumi paling jauh",ans:"B"},
+{cat:"Tata Surya",q:"Urutan planet dari Matahari yang benar adalah?",A:"Merkurius, Venus, Mars, Bumi",B:"Venus, Merkurius, Bumi, Mars",C:"Merkurius, Venus, Bumi, Mars",D:"Bumi, Venus, Mars, Merkurius",ans:"C"},
+{cat:"Tata Surya",q:"Fenomena Titius-Bode mendeskripsikan?",A:"Kecepatan planet",B:"Pola jarak planet dari Matahari",C:"Ukuran planet",D:"Rotasi planet",ans:"B"},
+// ─── PLANET ───────────────────────────────────────
+{cat:"Planet",q:"Planet manakah yang dijuluki 'Planet Merah'?",A:"Venus",B:"Jupiter",C:"Mars",D:"Merkurius",ans:"C"},
+{cat:"Planet",q:"Planet terbesar di tata surya adalah?",A:"Saturnus",B:"Jupiter",C:"Uranus",D:"Neptunus",ans:"B"},
+{cat:"Planet",q:"Badai Great Red Spot terdapat di planet?",A:"Saturnus",B:"Mars",C:"Neptunus",D:"Jupiter",ans:"D"},
+{cat:"Planet",q:"Planet mana yang berotasi 'terlentang' dengan sumbu kemiringan 98°?",A:"Neptunus",B:"Saturnus",C:"Uranus",D:"Jupiter",ans:"C"},
+{cat:"Planet",q:"Suhu permukaan Venus mencapai sekitar?",A:"100°C",B:"250°C",C:"465°C",D:"600°C",ans:"C"},
+{cat:"Planet",q:"Planet terkecil di tata surya adalah?",A:"Mars",B:"Merkurius",C:"Venus",D:"Pluto",ans:"B"},
+{cat:"Planet",q:"Berapa lama satu hari di Venus dibandingkan satu hari di Bumi?",A:"Lebih singkat",B:"Sama",C:"Lebih lama",D:"Dua kali lebih cepat",ans:"C"},
+{cat:"Planet",q:"Apa nama bulan terbesar Jupiter?",A:"Titan",B:"Europa",C:"Ganymede",D:"Io",ans:"C"},
+{cat:"Planet",q:"Neptunus pertama kali diamati pada tahun?",A:"1781",B:"1800",C:"1846",D:"1900",ans:"C"},
+{cat:"Planet",q:"Planet apa yang memiliki atmosfer terdiri hampir seluruhnya dari karbon dioksida?",A:"Mars",B:"Venus",C:"Merkurius",D:"Keduanya A dan B",ans:"D"},
+{cat:"Planet",q:"Berapa lama Neptunus mengelilingi Matahari?",A:"84 tahun",B:"165 tahun",C:"248 tahun",D:"200 tahun",ans:"B"},
+{cat:"Planet",q:"Bulan Europa milik Jupiter dikenal karena?",A:"Udara tipis",B:"Samudra air di bawah es",C:"Gunung api aktif",D:"Suhu tertinggi",ans:"B"},
+{cat:"Planet",q:"Planet mana yang diklasifikasi ulang menjadi planet katai pada 2006?",A:"Ceres",B:"Eris",C:"Pluto",D:"Makemake",ans:"C"},
+{cat:"Planet",q:"Apa nama fitur geologis terbesar di Mars?",A:"Olympus Mons",B:"Valles Marineris",C:"Hellas Basin",D:"Tharsis Bulge",ans:"A"},
+{cat:"Planet",q:"Saturnus jika dimasukkan ke air akan?",A:"Tenggelam ke dasar",B:"Melayang di permukaan",C:"Terbelah dua",D:"Menyerap air",ans:"B"},
+{cat:"Planet",q:"Berapa jumlah bulan yang dimiliki Mars?",A:"0",B:"1",C:"2",D:"3",ans:"C"},
+{cat:"Planet",q:"Planet manakah yang memiliki angin tercepat di tata surya?",A:"Jupiter",B:"Saturnus",C:"Uranus",D:"Neptunus",ans:"D"},
+{cat:"Planet",q:"Apa komposisi utama atmosfer Jupiter?",A:"Oksigen dan Nitrogen",B:"Karbon dioksida",C:"Hidrogen dan Helium",D:"Metana dan Amonia",ans:"C"},
+{cat:"Planet",q:"Venus berputar ke arah yang berlawanan dengan kebanyakan planet, fenomena ini disebut?",A:"Prograde rotation",B:"Retrograde rotation",C:"Axial tilt",D:"Orbital precession",ans:"B"},
+{cat:"Planet",q:"Manakah planet berbatu (terrestrial) di tata surya?",A:"Jupiter, Saturnus, Uranus, Neptunus",B:"Merkurius, Venus, Bumi, Mars",C:"Semua planet",D:"Hanya Bumi",ans:"B"},
+// ─── BINTANG ──────────────────────────────────────
+{cat:"Bintang",q:"Bintang paling dekat dengan Matahari selain Matahari sendiri adalah?",A:"Sirius",B:"Alpha Centauri A",C:"Proxima Centauri",D:"Barnard's Star",ans:"C"},
+{cat:"Bintang",q:"Apa warna bintang dengan suhu paling tinggi?",A:"Merah",B:"Kuning",C:"Putih",D:"Biru",ans:"D"},
+{cat:"Bintang",q:"Matahari diklasifikasikan sebagai bintang tipe?",A:"Red Giant",B:"White Dwarf",C:"Yellow Dwarf (G-type)",D:"Blue Supergiant",ans:"C"},
+{cat:"Bintang",q:"Sirius merupakan bintang paling terang di langit malam, ia termasuk tipe bintang?",A:"A-type Main Sequence",B:"G-type",C:"K-type",D:"M-type",ans:"A"},
+{cat:"Bintang",q:"Apa yang terjadi saat bintang bermassa besar mati?",A:"Membentuk nebula planet",B:"Supernova lalu menjadi bintang neutron atau black hole",C:"Menjadi white dwarf",D:"Langsung menghilang",ans:"B"},
+{cat:"Bintang",q:"Bintang Polaris atau Bintang Utara termasuk tipe?",A:"Red dwarf",B:"Yellow dwarf",C:"Cepheid variable",D:"White dwarf",ans:"C"},
+{cat:"Bintang",q:"Deret utama (main sequence) dalam diagram H-R menggambarkan?",A:"Bintang yang sedang menuju kematian",B:"Bintang yang membakar hidrogen di intinya",C:"Semua bintang raksasa",D:"Bintang neutron",ans:"B"},
+{cat:"Bintang",q:"Magnitudo tampak bintang mengukur?",A:"Kecerahan sebenarnya bintang",B:"Kecerahan bintang terlihat dari Bumi",C:"Jarak bintang",D:"Suhu bintang",ans:"B"},
+{cat:"Bintang",q:"Bintang dengan massa paling kecil yang masih bisa melakukan fusi nuklir adalah?",A:"White dwarf",B:"Red dwarf",C:"Brown dwarf",D:"Neutron star",ans:"B"},
+{cat:"Bintang",q:"Fenomena parallaks bintang digunakan untuk mengukur?",A:"Suhu bintang",B:"Komposisi bintang",C:"Jarak bintang",D:"Kecepatan bintang",ans:"C"},
+{cat:"Bintang",q:"Bintang Betelgeuse terletak di konstelasi?",A:"Orion",B:"Scorpius",C:"Leo",D:"Gemini",ans:"A"},
+{cat:"Bintang",q:"Apa itu bintang variabel Cepheid?",A:"Bintang yang selalu bersinar konstan",B:"Bintang yang berdenyut dengan periode teratur",C:"Bintang ganda",D:"Bintang yang akan meledak",ans:"B"},
+{cat:"Bintang",q:"Tahap akhir bintang bermassa rendah seperti Matahari adalah?",A:"Supernova",B:"Bintang neutron",C:"White Dwarf",D:"Black Hole",ans:"C"},
+{cat:"Bintang",q:"Satuan tahun cahaya digunakan untuk mengukur?",A:"Waktu perjalanan luar angkasa",B:"Jarak di alam semesta",C:"Usia bintang",D:"Kecerahan bintang",ans:"B"},
+{cat:"Bintang",q:"Bintang neutron terbentuk dari?",A:"Ledakan supernova bintang bermassa besar",B:"Bintang yang kehabisan bahan bakar tanpa ledakan",C:"Penggabungan dua white dwarf",D:"Runtuhnya nebula",ans:"A"},
+{cat:"Bintang",q:"Apa itu bintang ganda (binary star)?",A:"Dua bintang yang tampak berdekatan tapi tidak terkait",B:"Dua bintang yang mengorbit titik massa bersama",C:"Bintang yang memiliki dua inti",D:"Planet bercahaya seperti bintang",ans:"B"},
+{cat:"Bintang",q:"Luminositas bintang dipengaruhi utama oleh?",A:"Warna dan jarak",B:"Massa dan usia",C:"Radius dan suhu permukaan",D:"Kecepatan rotasi",ans:"C"},
+{cat:"Bintang",q:"Spektrum bintang digunakan untuk menentukan?",A:"Jarak saja",B:"Komposisi kimia dan suhu",C:"Massa saja",D:"Umur saja",ans:"B"},
+{cat:"Bintang",q:"Bintang paling besar yang diketahui saat ini adalah?",A:"VY Canis Majoris",B:"UY Scuti",C:"NML Cygni",D:"Betelgeuse",ans:"B"},
+{cat:"Bintang",q:"Seberapa jauh Proxima Centauri dari Matahari?",A:"1,3 parsec",B:"4,24 tahun cahaya",C:"10 tahun cahaya",D:"100 AU",ans:"B"},
+// ─── NEBULA ───────────────────────────────────────
+{cat:"Nebula",q:"Nebula adalah?",A:"Galaksi kecil",B:"Awan gas dan debu antarbintang",C:"Jenis bintang",D:"Gugus planet",ans:"B"},
+{cat:"Nebula",q:"Nebula Orion berjarak sekitar berapa tahun cahaya dari Bumi?",A:"500",B:"1344",C:"2000",D:"100",ans:"B"},
+{cat:"Nebula",q:"Nebula tipe apa yang terbentuk dari sisa ledakan supernova?",A:"Reflection nebula",B:"Emission nebula",C:"Supernova remnant",D:"Dark nebula",ans:"C"},
+{cat:"Nebula",q:"Apa warna umum dari nebula emisi?",A:"Biru",B:"Merah/merah muda karena hidrogen",C:"Hijau",D:"Kuning",ans:"B"},
+{cat:"Nebula",q:"Nebula Kepala Kuda (Horsehead Nebula) terletak di konstelasi?",A:"Leo",B:"Orion",C:"Cygnus",D:"Aquila",ans:"B"},
+{cat:"Nebula",q:"Nebula Planetari sebenarnya bukan berhubungan dengan planet, melainkan?",A:"Sisa supernova",B:"Selubung gas dari bintang masif",C:"Cangkang gas yang dilepas bintang mirip Matahari",D:"Galaksi jauh",ans:"C"},
+{cat:"Nebula",q:"Nebula apa yang sering disebut 'Nebula Kupu-Kupu'?",A:"NGC 6302",B:"Nebula Orion",C:"Nebula Kepiting",D:"Nebula Lagoon",ans:"A"},
+{cat:"Nebula",q:"Crab Nebula (Nebula Kepiting) adalah sisa supernova yang teramati pada tahun?",A:"1054",B:"1604",C:"1572",D:"1987",ans:"A"},
+{cat:"Nebula",q:"Nebula Gelap (Dark Nebula) tidak memancarkan cahaya karena?",A:"Terlalu jauh",B:"Awan debu menghalangi cahaya bintang belakang",C:"Tidak ada bintang di sana",D:"Terlalu dingin",ans:"B"},
+{cat:"Nebula",q:"Apa yang dimaksud dengan nebula cermin (reflection nebula)?",A:"Nebula yang memantulkan cahaya bintang terdekat",B:"Nebula yang memancarkan cahayanya sendiri",C:"Nebula yang menyerap semua cahaya",D:"Nebula di dekat lubang hitam",ans:"A"},
+{cat:"Nebula",q:"Nebula Eagle (Eagle Nebula) terkenal dengan fitur?",A:"Sabuk Orion",B:"Pilar Penciptaan (Pillars of Creation)",C:"Bintang neutron di pusatnya",D:"Gugus bintang tua",ans:"B"},
+{cat:"Nebula",q:"Nebula Lagoon (M8) terletak di konstelasi?",A:"Orion",B:"Sagittarius",C:"Scorpius",D:"Aquarius",ans:"B"},
+{cat:"Nebula",q:"Nebula apa yang dikenal sebagai tempat kelahiran bintang baru?",A:"Supernova remnant",B:"Dark nebula",C:"Giant molecular cloud",D:"Planetary nebula",ans:"C"},
+{cat:"Nebula",q:"Berapakah jarak Nebula Kepiting dari Bumi?",A:"1000 tahun cahaya",B:"2000 tahun cahaya",C:"6500 tahun cahaya",D:"10000 tahun cahaya",ans:"C"},
+// ─── GALAKSI ──────────────────────────────────────
+{cat:"Galaksi",q:"Galaksi terdekat dengan Bimasakti adalah?",A:"Galaksi Andromeda",B:"Galaksi Magellan Kecil",C:"Galaksi Triangulum",D:"Galaksi Sombrero",ans:"B"},
+{cat:"Galaksi",q:"Galaksi Bimasakti termasuk tipe galaksi?",A:"Elips",B:"Ireguler",C:"Spiral berpalang",D:"Lentikular",ans:"C"},
+{cat:"Galaksi",q:"Berapa estimasi jumlah bintang di galaksi Bimasakti?",A:"Satu miliar",B:"100-400 miliar",C:"Satu triliun",D:"10 miliar",ans:"B"},
+{cat:"Galaksi",q:"Galaksi Andromeda berjarak sekitar berapa tahun cahaya dari Bimasakti?",A:"1 juta",B:"2,537 juta",C:"10 juta",D:"500.000",ans:"B"},
+{cat:"Galaksi",q:"Apa nama inti supermasif di pusat Bimasakti?",A:"Cygnus X-1",B:"Sagittarius A*",C:"Virgo A",D:"Centaurus A",ans:"B"},
+{cat:"Galaksi",q:"Galaksi Magellan Besar dan Kecil dapat dilihat dari?",A:"Kutub Utara",B:"Ekuator",C:"Belahan Bumi Selatan",D:"Belahan Bumi Utara",ans:"C"},
+{cat:"Galaksi",q:"Kumpulan galaksi lokal yang mencakup Bimasakti disebut?",A:"Gugus Virgo",B:"Local Group",C:"Superkluster Laniakea",D:"Gugus Perseus",ans:"B"},
+{cat:"Galaksi",q:"Galaksi mana yang diprediksi akan bertabrakan dengan Bimasakti dalam ~4,5 miliar tahun?",A:"Galaksi Triangulum",B:"Galaksi Magellan",C:"Galaksi Andromeda",D:"Galaksi Sombrero",ans:"C"},
+{cat:"Galaksi",q:"Teleskop Hubble pertama kali membuktikan bahwa nebula spiral adalah galaksi terpisah pada tahun?",A:"1920-an",B:"1950-an",C:"1960-an",D:"1900-an",ans:"A"},
+{cat:"Galaksi",q:"Apa yang dimaksud dengan 'redshift' galaksi?",A:"Galaksi mendekati kita",B:"Galaksi menjauhi kita, cahayanya bergeser ke merah",C:"Galaksi berputar sangat cepat",D:"Galaksi sedang meledak",ans:"B"},
+{cat:"Galaksi",q:"Superkluster Laniakea berdiameter sekitar?",A:"100 juta tahun cahaya",B:"520 juta tahun cahaya",C:"1 miliar tahun cahaya",D:"50 juta tahun cahaya",ans:"B"},
+{cat:"Galaksi",q:"Galaksi tipe apa yang tidak memiliki struktur jelas dan tidak beraturan?",A:"Spiral",B:"Elips",C:"Lentikular",D:"Ireguler",ans:"D"},
+{cat:"Galaksi",q:"Apa itu quasar?",A:"Galaksi yang berisi banyak bintang tua",B:"Inti galaksi aktif yang sangat bercahaya",C:"Bintang yang berkedip sangat cepat",D:"Nebula bercahaya",ans:"B"},
+{cat:"Galaksi",q:"Piringan Bimasakti memiliki diameter sekitar?",A:"10.000 tahun cahaya",B:"52.850 tahun cahaya",C:"100.000 tahun cahaya",D:"200.000 tahun cahaya",ans:"C"},
+{cat:"Galaksi",q:"Hubble Ultra Deep Field (HUDF) menunjukkan bahwa dalam sepetak kecil langit terdapat?",A:"Ribuan bintang",B:"Ribuan galaksi",C:"Puluhan planet",D:"Beberapa nebula",ans:"B"},
+// ─── BLACK HOLE ───────────────────────────────────
+{cat:"Black Hole",q:"Apa yang disebut batas di mana tidak ada yang bisa keluar dari black hole?",A:"Singularity",B:"Event Horizon",C:"Photon Sphere",D:"Accretion Disk",ans:"B"},
+{cat:"Black Hole",q:"Foto pertama black hole (M87*) dirilis pada tahun?",A:"2015",B:"2017",C:"2019",D:"2021",ans:"C"},
+{cat:"Black Hole",q:"Efek di mana waktu berjalan lebih lambat di dekat black hole disebut?",A:"Spaghettification",B:"Gravitational time dilation",C:"Redshift",D:"Hawking radiation",ans:"B"},
+{cat:"Black Hole",q:"Radiasi Hawking adalah teori yang menyatakan bahwa?",A:"Black hole menyerap semua radiasi",B:"Black hole memancarkan radiasi dan perlahan menguap",C:"Black hole meledak tiba-tiba",D:"Black hole memenjarakan cahaya",ans:"B"},
+{cat:"Black Hole",q:"Apa yang terjadi pada materi yang jatuh melewati event horizon?",A:"Meledak",B:"Langsung menghilang",C:"Masuk ke singularitas",D:"Dipantulkan balik",ans:"C"},
+{cat:"Black Hole",q:"Black hole supermasif di pusat Bimasakti disebut?",A:"Cygnus X-1",B:"V404 Cygni",C:"Sagittarius A*",D:"M87*",ans:"C"},
+{cat:"Black Hole",q:"Massa Sagittarius A* diperkirakan setara dengan berapa massa Matahari?",A:"1 juta",B:"4 juta",C:"10 juta",D:"100 juta",ans:"B"},
+{cat:"Black Hole",q:"Proses di mana materi berputar sebelum jatuh ke black hole disebut?",A:"Accretion disk",B:"Event horizon",C:"Jet relativistik",D:"Singularity",ans:"A"},
+{cat:"Black Hole",q:"Spaghettification adalah?",A:"Makanan di luar angkasa",B:"Peregangan objek karena gaya gravitasi pasang-surut black hole",C:"Ledakan black hole",D:"Pembentukan black hole",ans:"B"},
+{cat:"Black Hole",q:"Bagaimana black hole bermassa bintang terbentuk?",A:"Dari tabrakan dua bintang neutron",B:"Dari ledakan supernova bintang bermassa sangat besar",C:"Dari runtuhnya galaksi",D:"Dari pendinginan white dwarf",ans:"B"},
+{cat:"Black Hole",q:"Massa black hole M87* yang difoto pertama kali setara dengan berapa massa Matahari?",A:"1 miliar",B:"3,5 miliar",C:"6,5 miliar",D:"10 miliar",ans:"C"},
+{cat:"Black Hole",q:"Gelombang gravitasi pertama yang terdeteksi pada 2015 berasal dari?",A:"Tabrakan dua bintang neutron",B:"Tabrakan dua black hole bermassa bintang",C:"Supernova bintang besar",D:"Tubrukan galaksi",ans:"B"},
+{cat:"Black Hole",q:"Istilah 'black hole' pertama kali dipopulerkan oleh fisikawan?",A:"Albert Einstein",B:"Stephen Hawking",C:"John Wheeler",D:"Karl Schwarzschild",ans:"C"},
+{cat:"Black Hole",q:"Solusi Schwarzschild menggambarkan?",A:"Kecepatan cahaya",B:"Geometri ruang-waktu di sekitar massa bulat non-berputar",C:"Relativitas khusus",D:"Kosmologi Big Bang",ans:"B"},
+// ─── ASTRONOT ─────────────────────────────────────
+{cat:"Astronot",q:"Manusia pertama yang berjalan di Bulan adalah?",A:"Buzz Aldrin",B:"Neil Armstrong",C:"Yuri Gagarin",D:"John Glenn",ans:"B"},
+{cat:"Astronot",q:"Manusia pertama di luar angkasa adalah?",A:"Neil Armstrong",B:"Buzz Aldrin",C:"Yuri Gagarin",D:"Alan Shepard",ans:"C"},
+{cat:"Astronot",q:"Misi Apollo berapa yang pertama kali mendarat di Bulan?",A:"Apollo 10",B:"Apollo 11",C:"Apollo 12",D:"Apollo 8",ans:"B"},
+{cat:"Astronot",q:"Wanita pertama yang pergi ke luar angkasa adalah?",A:"Sally Ride",B:"Valentina Tereshkova",C:"Mae Jemison",D:"Christa McAuliffe",ans:"B"},
+{cat:"Astronot",q:"ISS (International Space Station) pertama kali diawaki secara terus-menerus sejak?",A:"1995",B:"1998",C:"2000",D:"2005",ans:"C"},
+{cat:"Astronot",q:"Astronot pertama yang berjalan di luar angkasa (spacewalk pertama) adalah?",A:"Yuri Gagarin",B:"Alexei Leonov",C:"Neil Armstrong",D:"Ed White",ans:"B"},
+{cat:"Astronot",q:"Wahana Apollo 13 mengalami masalah besar dan harus kembali ke Bumi akibat?",A:"Kegagalan mesin",B:"Ledakan tangki oksigen",C:"Badai matahari",D:"Kehilangan komunikasi",ans:"B"},
+{cat:"Astronot",q:"Berapa lama Yuri Gagarin mengorbit Bumi pada penerbangan bersejarahnya?",A:"10 menit",B:"28 menit",C:"108 menit",D:"240 menit",ans:"C"},
+{cat:"Astronot",q:"Program luar angkasa manakah yang mengirim manusia ke Bulan?",A:"Gemini",B:"Mercury",C:"Apollo",D:"Artemis",ans:"C"},
+{cat:"Astronot",q:"Astronot Indonesia pertama yang mengorbit ke luar angkasa adalah?",A:"B.J. Habibie",B:"Pratiwi Sudarmono",C:"Dirgantara",D:"Indonesia belum mengirim astronot",ans:"D"},
+{cat:"Astronot",q:"Program NASA yang bertujuan mengembalikan manusia ke Bulan disebut?",A:"Apollo",B:"Artemis",C:"Orion",D:"Constellation",ans:"B"},
+{cat:"Astronot",q:"Buzz Aldrin adalah astronot ke berapa yang berjalan di Bulan?",A:"Pertama",B:"Kedua",C:"Ketiga",D:"Keempat",ans:"B"},
+{cat:"Astronot",q:"Rekor tinggal terlama di ISS saat ini dipegang oleh astronot dari negara?",A:"Amerika Serikat",B:"Rusia",C:"China",D:"Jepang",ans:"B"},
+{cat:"Astronot",q:"Kapal luar angkasa komersial SpaceX yang membawa astronot ke ISS disebut?",A:"Dragon",B:"Starship",C:"Falcon",D:"Crew Shuttle",ans:"A"},
+// ─── SATELIT ──────────────────────────────────────
+{cat:"Satelit",q:"Satelit buatan pertama di dunia adalah?",A:"Explorer 1",B:"Vostok 1",C:"Sputnik 1",D:"Telstar 1",ans:"C"},
+{cat:"Satelit",q:"Sputnik 1 diluncurkan oleh negara mana pada 1957?",A:"Amerika Serikat",B:"Uni Soviet",C:"China",D:"Inggris",ans:"B"},
+{cat:"Satelit",q:"GPS (Global Positioning System) dimiliki dan dioperasikan oleh?",A:"NASA",B:"ESA",C:"Departemen Pertahanan AS",D:"PBB",ans:"C"},
+{cat:"Satelit",q:"Teleskop Hubble Space Telescope mengorbit pada ketinggian sekitar?",A:"200 km",B:"340 km",C:"547 km",D:"1000 km",ans:"C"},
+{cat:"Satelit",q:"Satelit Indonesia pertama adalah?",A:"Palapa A1",B:"Telkom-1",C:"BRIsat",D:"Garuda-1",ans:"A"},
+{cat:"Satelit",q:"Teleskop Hubble diluncurkan pada tahun?",A:"1985",B:"1988",C:"1990",D:"1993",ans:"C"},
+{cat:"Satelit",q:"Satelit cuaca di orbit geostasioner berada di ketinggian?",A:"200 km",B:"2000 km",C:"35.786 km",D:"100.000 km",ans:"C"},
+{cat:"Satelit",q:"Wahana James Webb Space Telescope (JWST) mengorbit di titik Lagrange mana?",A:"L1",B:"L2",C:"L3",D:"L4",ans:"B"},
+{cat:"Satelit",q:"Satelit alami Bumi adalah?",A:"ISS",B:"Bulan",C:"Sputnik",D:"Hubble",ans:"B"},
+{cat:"Satelit",q:"Apa perbedaan orbit LEO dan GEO?",A:"LEO lebih tinggi dari GEO",B:"LEO sekitar 200-2000 km, GEO sekitar 35.786 km",C:"Keduanya sama",D:"GEO lebih rendah",ans:"B"},
+// ─── ROKET ────────────────────────────────────────
+{cat:"Roket",q:"Roket terkuat yang pernah diluncurkan sepanjang sejarah adalah?",A:"Saturn V",B:"Falcon Heavy",C:"Space Shuttle",D:"SLS",ans:"A"},
+{cat:"Roket",q:"Roket Saturn V digunakan untuk misi?",A:"Program Mercury",B:"Program Gemini",C:"Program Apollo",D:"ISS",ans:"C"},
+{cat:"Roket",q:"Perusahaan mana yang mengembangkan roket Falcon 9?",A:"Blue Origin",B:"Boeing",C:"SpaceX",D:"ULA",ans:"C"},
+{cat:"Roket",q:"Roket yang dapat mendarat kembali dan digunakan berulang (reusable) pertama kali dibuktikan secara komersial oleh?",A:"NASA",B:"Blue Origin",C:"SpaceX",D:"Roscosmos",ans:"C"},
+{cat:"Roket",q:"Bahan bakar utama roket Saturn V adalah?",A:"Hidrogen cair dan oksigen cair",B:"RP-1 (kerosene) dan oksigen cair (stage pertama)",C:"Hidrazin",D:"Metana dan oksigen cair",ans:"B"},
+{cat:"Roket",q:"Roket SLS (Space Launch System) milik NASA dikembangkan untuk?",A:"Misi ISS",B:"Program Artemis ke Bulan",C:"Mars One",D:"Satelit komersial",ans:"B"},
+{cat:"Roket",q:"Wahana Starship milik SpaceX didesain untuk?",A:"Mengirim satelit kecil",B:"Misi Mars dan penerbangan manusia jarak jauh",C:"Stasiun orbit LEO",D:"Misi ke Jupiter",ans:"B"},
+{cat:"Roket",q:"Roket R-7 milik Uni Soviet terkenal karena?",A:"Pertama kali ke Mars",B:"Meluncurkan Sputnik 1",C:"Paling efisien bahan bakar",D:"Roket terbesar",ans:"B"},
+{cat:"Roket",q:"Apa prinsip dasar kerja roket berdasarkan hukum Newton?",A:"Hukum I Newton",B:"Hukum II Newton",C:"Hukum III Newton",D:"Hukum Gravitasi",ans:"C"},
+{cat:"Roket",q:"Siapa yang dianggap sebagai bapak astronautika modern dan teori roket?",A:"Wernher von Braun",B:"Konstantin Tsiolkovsky",C:"Robert Goddard",D:"Hermann Oberth",ans:"B"},
+// ─── EKSOPLANET ───────────────────────────────────
+{cat:"Eksoplanet",q:"Eksoplanet pertama yang dikonfirmasi mengorbit bintang mirip Matahari adalah?",A:"51 Pegasi b",B:"Kepler-452b",C:"Proxima b",D:"TRAPPIST-1d",ans:"A"},
+{cat:"Eksoplanet",q:"Metode transit planet digunakan untuk mendeteksi eksoplanet berdasarkan?",A:"Perubahan kecepatan radial bintang",B:"Penurunan kecerahan bintang",C:"Gambar langsung planet",D:"Gravitasi mikro",ans:"B"},
+{cat:"Eksoplanet",q:"Teleskop Kepler misi utamanya adalah?",A:"Pemetaan galaksi",B:"Penemuan eksoplanet dengan metode transit",C:"Pengamatan bintang neutron",D:"Foto black hole",ans:"B"},
+{cat:"Eksoplanet",q:"Sistem bintang TRAPPIST-1 dikenal karena?",A:"Memiliki 1 eksoplanet",B:"Memiliki 7 planet berbatu, beberapa di zona layak huni",C:"Bintang paling dekat",D:"Black hole di pusatnya",ans:"B"},
+{cat:"Eksoplanet",q:"Zona layak huni (habitable zone) didefinisikan sebagai?",A:"Daerah tanpa atmosfer",B:"Daerah di sekitar bintang di mana air cair bisa ada di permukaan",C:"Orbit paling dekat ke bintang",D:"Daerah dengan oksigen melimpah",ans:"B"},
+{cat:"Eksoplanet",q:"Hot Jupiter adalah jenis eksoplanet yang?",A:"Berbatu seperti Bumi",B:"Gas raksasa yang sangat dekat bintangnya",C:"Beku seperti Neptunus",D:"Memiliki cincin tebal",ans:"B"},
+{cat:"Eksoplanet",q:"Eksoplanet Kepler-452b dijuluki sebagai?",A:"Sepupu Bumi",B:"Kembaran Jupiter",C:"Super-Bumi",D:"Mini-Neptunus",ans:"A"},
+{cat:"Eksoplanet",q:"Metode kecepatan radial (doppler) mendeteksi eksoplanet melalui?",A:"Gambar langsung",B:"Goyangan bintang akibat gravitasi planet",C:"Bayangan planet",D:"Emisi radio planet",ans:"B"},
+{cat:"Eksoplanet",q:"Berapa total eksoplanet yang telah dikonfirmasi hingga pertengahan 2020-an?",A:"Lebih dari 100",B:"Lebih dari 1000",C:"Lebih dari 5000",D:"Lebih dari 50000",ans:"C"},
+{cat:"Eksoplanet",q:"Proxima Centauri b menarik perhatian karena?",A:"Planet terbesar yang ditemukan",B:"Planet terdekat di zona layak huni bintang terdekat kita",C:"Memiliki atmosfer oksigen terbukti",D:"Planet paling panas",ans:"B"},
+// ─── ASTROFISIKA ──────────────────────────────────
+{cat:"Astrofisika",q:"Hukum Hubble menyatakan bahwa galaksi semakin cepat menjauh seiring?",A:"Bertambahnya massa",B:"Bertambahnya jarak dari kita",C:"Berkurangnya cahaya",D:"Bertambahnya usia",ans:"B"},
+{cat:"Astrofisika",q:"Konstanta Hubble mengukur?",A:"Usia alam semesta",B:"Kecepatan ekspansi alam semesta",C:"Kecepatan cahaya",D:"Massa galaksi",ans:"B"},
+{cat:"Astrofisika",q:"Materi gelap (dark matter) tidak dapat diamati secara langsung, tapi keberadaannya dibuktikan melalui?",A:"Warna hitam langit",B:"Efek gravitasinya terhadap materi tampak",C:"Radiasi yang dipancarkan",D:"Massa lubang hitam",ans:"B"},
+{cat:"Astrofisika",q:"Energi gelap (dark energy) diyakini bertanggung jawab atas?",A:"Pembentukan bintang",B:"Percepatan ekspansi alam semesta",C:"Pembentukan black hole",D:"Tabrakan galaksi",ans:"B"},
+{cat:"Astrofisika",q:"Persamaan E=mc² ditemukan oleh?",A:"Isaac Newton",B:"Albert Einstein",C:"Max Planck",D:"Niels Bohr",ans:"B"},
+{cat:"Astrofisika",q:"Fusi nuklir di inti Matahari mengubah?",A:"Helium menjadi hidrogen",B:"Hidrogen menjadi helium",C:"Karbon menjadi oksigen",D:"Oksigen menjadi nitrogen",ans:"B"},
+{cat:"Astrofisika",q:"Panjang gelombang radiasi kosmik latar belakang (CMB) paling kuat ada di rentang?",A:"Sinar X",B:"Cahaya tampak",C:"Gelombang mikro",D:"Gelombang radio",ans:"C"},
+{cat:"Astrofisika",q:"Teori relativitas umum Einstein memprediksi?",A:"Partikel subatom",B:"Lengkungan ruang-waktu oleh massa",C:"Kecepatan cahaya berubah",D:"Ukuran atom",ans:"B"},
+{cat:"Astrofisika",q:"Apa itu parsek sebagai satuan astronomi?",A:"3,26 tahun cahaya",B:"1 AU",C:"Jarak dari Bumi ke Matahari",D:"1.000 tahun cahaya",ans:"A"},
+{cat:"Astrofisika",q:"Pulsar adalah?",A:"Black hole yang berputar",B:"Bintang neutron berputar cepat yang memancarkan sinyal radio periodik",C:"Quasar berbentuk denyutan",D:"Galaksi aktif",ans:"B"},
+// ─── KOSMOLOGI ────────────────────────────────────
+{cat:"Kosmologi",q:"Teori Big Bang menyatakan bahwa alam semesta berasal dari?",A:"Ledakan bintang raksasa",B:"Keadaan padat dan panas yang kemudian mengembang",C:"Penggabungan beberapa alam semesta",D:"Rotasi lubang hitam supermasif",ans:"B"},
+{cat:"Kosmologi",q:"Berapa perkiraan usia alam semesta?",A:"4,5 miliar tahun",B:"9 miliar tahun",C:"13,8 miliar tahun",D:"20 miliar tahun",ans:"C"},
+{cat:"Kosmologi",q:"CMB (Cosmic Microwave Background) ditemukan pertama kali secara tidak sengaja oleh?",A:"Edwin Hubble",B:"Arno Penzias dan Robert Wilson",C:"Fred Hoyle",D:"Georges Lemaître",ans:"B"},
+{cat:"Kosmologi",q:"Siapa yang pertama kali mengusulkan teori Big Bang berdasarkan solusi persamaan Einstein?",A:"Edwin Hubble",B:"Fred Hoyle",C:"Georges Lemaître",D:"Alexander Friedmann",ans:"C"},
+{cat:"Kosmologi",q:"Teori inflasi kosmik menyatakan bahwa?",A:"Alam semesta mengembang perlahan sejak awal",B:"Ada periode ekspansi sangat cepat sesaat setelah Big Bang",C:"Alam semesta tidak berubah",D:"Alam semesta akan mengkerut",ans:"B"},
+{cat:"Kosmologi",q:"Alam semesta observable (yang bisa diamati) memiliki diameter sekitar?",A:"13,8 miliar tahun cahaya",B:"46 miliar parsec",C:"93 miliar tahun cahaya",D:"50 miliar tahun cahaya",ans:"C"},
+{cat:"Kosmologi",q:"Big Rip adalah skenario akhir alam semesta di mana?",A:"Semua materi jatuh ke black hole",B:"Ekspansi meroket dan merobek semua struktur",C:"Alam semesta beku dalam kedinginan",D:"Alam semesta kembali ke titik awal",ans:"B"},
+{cat:"Kosmologi",q:"Proporsi komposisi alam semesta yang diperkirakan saat ini adalah?",A:"50% materi biasa, 50% gelap",B:"5% materi biasa, 27% materi gelap, 68% energi gelap",C:"100% materi biasa",D:"50% energi gelap, 50% materi",ans:"B"},
+{cat:"Kosmologi",q:"Apa itu 'multiverse'?",A:"Tata surya yang memiliki banyak bintang",B:"Hipotesis bahwa ada banyak alam semesta di luar alam semesta kita",C:"Galaksi super masif",D:"Wilayah alam semesta gelap",ans:"B"},
+{cat:"Kosmologi",q:"Prinsip kosmologi menyatakan bahwa alam semesta?",A:"Berputar mengelilingi satu titik",B:"Homogen dan isotropik pada skala besar",C:"Memiliki pusat yang jelas",D:"Terbatas dan berbatas",ans:"B"},
+// ─── SEJARAH ASTRONOMI ────────────────────────────
+{cat:"Sejarah Astronomi",q:"Siapa yang pertama kali mengusulkan model heliosentris (Matahari sebagai pusat)?",A:"Galileo Galilei",B:"Nicolaus Copernicus",C:"Johannes Kepler",D:"Tycho Brahe",ans:"B"},
+{cat:"Sejarah Astronomi",q:"Galileo Galilei menggunakan teleskop untuk menemukan?",A:"Planet Uranus",B:"Galaksi Andromeda",C:"Bulan-bulan Jupiter",D:"Cincin Saturnus",ans:"C"},
+{cat:"Sejarah Astronomi",q:"Hukum gerak planet dirumuskan oleh?",A:"Isaac Newton",B:"Galileo Galilei",C:"Johannes Kepler",D:"Nicolaus Copernicus",ans:"C"},
+{cat:"Sejarah Astronomi",q:"Siapa yang menemukan teleskop refleksi (reflecting telescope)?",A:"Galileo",B:"Isaac Newton",C:"William Herschel",D:"Christiaan Huygens",ans:"B"},
+{cat:"Sejarah Astronomi",q:"Planet Uranus ditemukan oleh?",A:"Galileo Galilei",B:"William Herschel",C:"Johann Bode",D:"Charles Messier",ans:"B"},
+{cat:"Sejarah Astronomi",q:"Katalog Messier adalah daftar dari?",A:"Bintang terang",B:"Planet ekstra surya",C:"Objek langit dalam seperti nebula dan galaksi",D:"Asteroid",ans:"C"},
+{cat:"Sejarah Astronomi",q:"Siapa ilmuwan wanita yang menghitung 'konstanta Cepheid' sehingga bisa mengukur jarak galaksi?",A:"Caroline Herschel",B:"Henrietta Swan Leavitt",C:"Annie Jump Cannon",D:"Cecilia Payne-Gaposchkin",ans:"B"},
+{cat:"Sejarah Astronomi",q:"Observatorium Stonehenge di Inggris diyakini digunakan oleh peradaban kuno untuk?",A:"Pertahanan militer",B:"Pengamatan posisi Matahari dan bulan",C:"Pemujaan bintang tertentu",D:"Kalender panen saja",ans:"B"},
+{cat:"Sejarah Astronomi",q:"Tycho Brahe terkenal karena?",A:"Merumuskan hukum gravitasi",B:"Pengamatan astronomi sangat akurat tanpa teleskop",C:"Menemukan Uranus",D:"Membuat teleskop pertama",ans:"B"},
+{cat:"Sejarah Astronomi",q:"Misi Apollo 11 mendarat di Bulan pada tanggal?",A:"12 Juli 1969",B:"20 Juli 1969",C:"4 Oktober 1957",D:"5 Mei 1961",ans:"B"},
+{cat:"Sejarah Astronomi",q:"Siapa yang menemukan bahwa galaksi lain bergerak menjauh dari kita?",A:"Einstein",B:"Kepler",C:"Edwin Hubble",D:"Galileo",ans:"C"},
+// ─── KONSTELASI ───────────────────────────────────
+{cat:"Konstelasi",q:"Berapa jumlah konstelasi resmi yang diakui IAU?",A:"48",B:"68",C:"88",D:"108",ans:"C"},
+{cat:"Konstelasi",q:"Konstelasi manakah yang berisi bintang paling terang di langit malam (Sirius)?",A:"Orion",B:"Canis Major",C:"Gemini",D:"Leo",ans:"B"},
+{cat:"Konstelasi",q:"Konstelasi Orion dapat dikenali dari?",A:"Bentuk kalajengking",B:"Tiga bintang sejajar (Sabuk Orion)",C:"Bentuk beruang besar",D:"Bintang terang tunggal",ans:"B"},
+{cat:"Konstelasi",q:"Zodiak terdiri dari berapa konstelasi?",A:"10",B:"11",C:"12",D:"13",ans:"C"},
+{cat:"Konstelasi",q:"Konstelasi Salib Selatan (Crux) digunakan untuk?",A:"Menentukan arah Utara",B:"Menentukan arah Selatan",C:"Menentukan pukul tengah malam",D:"Memprediksi cuaca",ans:"B"},
+{cat:"Konstelasi",q:"Konstelasi Scorpius mengandung bintang terang bernama?",A:"Rigel",B:"Antares",C:"Betelgeuse",D:"Aldebaran",ans:"B"},
+{cat:"Konstelasi",q:"Ursa Major (Beruang Besar) terkenal karena mengandung?",A:"Bintang Polaris",B:"The Big Dipper (Gayung Besar)",C:"Bintang Sirius",D:"Sabuk Orion",ans:"B"},
+{cat:"Konstelasi",q:"Konstelasi Cassiopeia berbentuk seperti?",A:"Pemburu",B:"Ratu bertahta atau huruf W/M",C:"Kalajengking",D:"Banteng",ans:"B"},
+{cat:"Konstelasi",q:"Konstelasi Centaurus terkenal karena mengandung?",A:"Bintang Sirius",B:"Sistem Alpha Centauri",C:"Nebula Orion",D:"Gugus bintang Pleiades",ans:"B"},
+{cat:"Konstelasi",q:"Apa nama konstelasi yang mengandung gugusan bintang Pleiades?",A:"Orion",B:"Perseus",C:"Taurus",D:"Gemini",ans:"C"},
+// ─── BULAN ────────────────────────────────────────
+{cat:"Bulan",q:"Bulan mengorbit Bumi dengan periode?",A:"7 hari",B:"14 hari",C:"27,3 hari",D:"30 hari",ans:"C"},
+{cat:"Bulan",q:"Mengapa kita selalu melihat sisi yang sama dari Bulan?",A:"Bulan tidak berputar",B:"Periode rotasi dan revolusi Bulan sama",C:"Gravitasi Bumi menghentikan rotasi",D:"Bulan terlalu dekat",ans:"B"},
+{cat:"Bulan",q:"Berapa jarak rata-rata Bulan dari Bumi?",A:"284.000 km",B:"384.400 km",C:"450.000 km",D:"500.000 km",ans:"B"},
+{cat:"Bulan",q:"Teori dominan asal-usul Bulan menyatakan?",A:"Bulan terperangkap gravitasi Bumi",B:"Bulan terbentuk bersamaan Bumi",C:"Tabrakan Bumi dengan objek seukuran Mars (Giant Impact)",D:"Bulan pecahan asteroid besar",ans:"C"},
+{cat:"Bulan",q:"Sisi jauh Bulan (far side) pertama kali difoto oleh?",A:"Apollo 8",B:"Luna 3 (Uni Soviet)",C:"Apollo 11",D:"Luna 9",ans:"B"},
+{cat:"Bulan",q:"Laut di Bulan (mare) sebenarnya adalah?",A:"Lautan air beku",B:"Dataran vulkanik basaltik",C:"Kawah meteorit besar",D:"Gurun pasir bulan",ans:"B"},
+{cat:"Bulan",q:"Bulan super (Supermoon) terjadi ketika?",A:"Bulan lebih dekat ke Matahari",B:"Bulan purnama terjadi saat Bulan di perigee",C:"Dua Bulan purnama dalam satu bulan",D:"Bayangan Bumi menutupi seluruh Bulan",ans:"B"},
+{cat:"Bulan",q:"Gerhana Bulan total terjadi ketika?",A:"Bulan menutupi Matahari",B:"Bumi berada di antara Matahari dan Bulan",C:"Bulan berada di antara Bumi dan Matahari",D:"Bulan berada di titik terjauh dari Bumi",ans:"B"},
+{cat:"Bulan",q:"Bulan biru (Blue Moon) adalah istilah untuk?",A:"Bulan yang tampak biru",B:"Bulan purnama kedua dalam satu bulan kalender",C:"Gerhana bulan biru",D:"Bulan purnama di musim dingin",ans:"B"},
+{cat:"Bulan",q:"Wahana misi manakah yang pertama kali mendarat lunak di Bulan?",A:"Luna 2",B:"Luna 9",C:"Surveyor 1",D:"Ranger 7",ans:"B"},
+{cat:"Bulan",q:"Berapa persen permukaan Bulan yang selalu menghadap Bumi?",A:"40%",B:"50%",C:"60%",D:"100% sisi yang sama",ans:"B"},
+// ─── MATAHARI ─────────────────────────────────────
+{cat:"Matahari",q:"Suhu permukaan Matahari sekitar?",A:"1.000°C",B:"3.000°C",C:"5.500°C",D:"10.000°C",ans:"C"},
+{cat:"Matahari",q:"Lapisan terluar atmosfer Matahari yang dapat dilihat saat gerhana total disebut?",A:"Fotosfer",B:"Kromosfer",C:"Korona",D:"Tachocline",ans:"C"},
+{cat:"Matahari",q:"Bintik Matahari (sunspot) adalah daerah?",A:"Sangat panas di permukaan",B:"Lebih dingin dan lebih gelap di fotosfer",C:"Ledakan plasma",D:"Gas hidrogen paling padat",ans:"B"},
+{cat:"Matahari",q:"Matahari dalam siklus 11 tahun mengalami?",A:"Perubahan ukuran",B:"Perubahan aktivitas bintik matahari",C:"Perubahan komposisi",D:"Perubahan warna",ans:"B"},
+{cat:"Matahari",q:"Solar flare (semburan matahari) adalah?",A:"Ledakan besar energi dari permukaan Matahari",B:"Bintik gelap di permukaan",C:"Awan plasma yang mengangkat dari korona",D:"Bayangan gerhana",ans:"A"},
+{cat:"Matahari",q:"Angin matahari (solar wind) terutama terdiri dari?",A:"Gas CO2",B:"Partikel bermuatan (proton dan elektron)",C:"Partikel netral",D:"Foton cahaya",ans:"B"},
+{cat:"Matahari",q:"Fenomena Aurora di kutub Bumi disebabkan oleh?",A:"Pantulan sinar Matahari",B:"Partikel angin matahari berinteraksi dengan magnetosfer Bumi",C:"Meteor yang terbakar",D:"Cahaya dari bintang jauh",ans:"B"},
+{cat:"Matahari",q:"Matahari menghabiskan sekitar berapa persen dari hidrogen sebelum menjadi Red Giant?",A:"10%",B:"50%",C:"90%",D:"100%",ans:"C"},
+{cat:"Matahari",q:"Protuberance matahari adalah?",A:"Bintik matahari",B:"Lengkungan plasma besar di atas permukaan Matahari",C:"Inti Matahari",D:"Ledakan korona",ans:"B"},
+{cat:"Matahari",q:"Coronal Mass Ejection (CME) dapat menyebabkan?",A:"Gerhana matahari",B:"Badai geomagnetik di Bumi",C:"Hujan meteor",D:"Supernova",ans:"B"},
+{cat:"Matahari",q:"Matahari termasuk bintang generasi ke berapa berdasarkan komposisinya?",A:"Generasi pertama (Population III)",B:"Generasi ketiga (Population I)",C:"Generasi kedua (Population II)",D:"Tidak dapat diklasifikasikan",ans:"B"},
+{cat:"Matahari",q:"Apa nama wahana yang mengorbit sangat dekat ke Matahari untuk mempelajarinya?",A:"Parker Solar Probe",B:"SOHO",C:"Solar Orbiter",D:"Semua benar",ans:"D"},
+];
+
+// ═══════════════════════════════════════════════════
+// QUIZ STATE
+// ═══════════════════════════════════════════════════
+let questions = [];
+let currentIdx = 0;
+let correct = 0, wrong = 0;
+let timerInterval = null;
+let timeLeft = 30;
+let answered = false;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function pickQuestions() {
+  return shuffle(DB).slice(0, 20);
+}
+
+// ═══════════════════════════════════════════════════
+// LOADING
+// ═══════════════════════════════════════════════════
+function startLoading(callback) {
+  showPage('page-loading');
+  const bar = document.getElementById('prog-bar');
+  const pct = document.getElementById('prog-pct');
+  let p = 0;
+  const duration = 4000;
+  const interval = 40;
+  const step = 100 / (duration / interval);
+  const id = setInterval(() => {
+    p = Math.min(100, p + step * (0.8 + Math.random() * 0.4));
+    bar.style.width = p + '%';
+    pct.textContent = Math.floor(p) + '%';
+    if (p >= 100) {
+      clearInterval(id);
+      bar.style.width = '100%';
+      pct.textContent = '100%';
+      setTimeout(callback, 300);
+    }
+  }, interval);
+}
+
+// ═══════════════════════════════════════════════════
+// TIMER
+// ═══════════════════════════════════════════════════
+const CIRCUMFERENCE = 2 * Math.PI * 22; // r=22
+function setTimerUI(t) {
+  const prog = document.getElementById('timer-prog');
+  const txt = document.getElementById('timer-text');
+  if (!prog || !txt) return;
+  const offset = CIRCUMFERENCE * (1 - t / 30);
+  prog.style.strokeDashoffset = offset;
+  prog.style.stroke = t <= 10 ? '#ff3d57' : t <= 20 ? '#ffd740' : '#00d4ff';
+  txt.textContent = t;
+  txt.style.color = t <= 10 ? '#ff3d57' : '#e8f0ff';
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  timeLeft = 30;
+  setTimerUI(30);
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    setTimerUI(timeLeft);
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      onTimeUp();
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+
+// ═══════════════════════════════════════════════════
+// QUIZ LOGIC
+// ═══════════════════════════════════════════════════
+function startQuiz(newSet) {
+  if (newSet) questions = pickQuestions();
+  currentIdx = 0;
+  correct = 0;
+  wrong = 0;
+  showPage('page-quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  answered = false;
+  const q = questions[currentIdx];
+  document.getElementById('q-num').textContent = currentIdx + 1;
+  document.getElementById('s-correct').textContent = correct;
+  document.getElementById('s-wrong').textContent = wrong;
+
+  const card = document.getElementById('q-card');
+  card.className = 'q-card anim-in';
+
+  document.getElementById('q-cat').textContent = q.cat;
+  document.getElementById('q-text').textContent = q.q;
+
+  const grid = document.getElementById('options-grid');
+  grid.innerHTML = '';
+  const opts = ['A','B','C','D'];
+  opts.forEach(key => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = `<span class="opt-label">${key}</span><span>${q[key]}</span>`;
+    btn.addEventListener('click', () => onAnswer(key, btn));
+    grid.appendChild(btn);
+  });
+
+  startTimer();
+}
+
+function onAnswer(chosen, btn) {
+  if (answered) return;
+  answered = true;
+  stopTimer();
+
+  const q = questions[currentIdx];
+  const card = document.getElementById('q-card');
+  const allBtns = document.querySelectorAll('.opt-btn');
+  allBtns.forEach(b => b.disabled = true);
+
+  const opts = ['A','B','C','D'];
+  const isCorrect = chosen === q.ans;
+
+  if (isCorrect) {
+    correct++;
+    btn.classList.add('selected-correct');
+    card.classList.add('correct');
+    playCorrect();
+  } else {
+    wrong++;
+    btn.classList.add('selected-wrong');
+    card.classList.add('wrong');
+    playWrong();
+    vibrate();
+    // Reveal correct
+    opts.forEach((k, i) => {
+      if (k === q.ans) allBtns[i].classList.add('reveal-correct');
+    });
+  }
+
+  document.getElementById('s-correct').textContent = correct;
+  document.getElementById('s-wrong').textContent = wrong;
+
+  setTimeout(nextQuestion, 1200);
+}
+
+function onTimeUp() {
+  if (answered) return;
+  answered = true;
+  wrong++;
+  playWrong();
+  vibrate();
+
+  const q = questions[currentIdx];
+  const card = document.getElementById('q-card');
+  card.classList.add('wrong');
+  const allBtns = document.querySelectorAll('.opt-btn');
+  allBtns.forEach(b => b.disabled = true);
+  const opts = ['A','B','C','D'];
+  opts.forEach((k, i) => {
+    if (k === q.ans) allBtns[i].classList.add('reveal-correct');
+  });
+  document.getElementById('s-wrong').textContent = wrong;
+
+  setTimeout(nextQuestion, 1200);
+}
+
+function nextQuestion() {
+  currentIdx++;
+  if (currentIdx >= 20) {
+    showResults();
+  } else {
+    renderQuestion();
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// RESULTS
+// ═══════════════════════════════════════════════════
+function getRank(pct) {
+  if (pct <= 20) return '🌌 Pemula Galaksi';
+  if (pct <= 40) return '🔭 Pengamat Langit';
+  if (pct <= 60) return '🪐 Penjelajah Tata Surya';
+  if (pct <= 80) return '🔬 Peneliti Kosmos';
+  return '🏆 Master Alam Semesta';
+}
+
+function showResults() {
+  showPage('page-result');
+  const pct = Math.round((correct / 20) * 100);
+  document.getElementById('res-correct').textContent = correct;
+  document.getElementById('res-wrong').textContent = wrong;
+  document.getElementById('res-rank').textContent = getRank(pct);
+
+  // Animate count
+  const pctEl = document.getElementById('res-pct');
+  let n = 0;
+  const step = Math.ceil(pct / 60);
+  const id = setInterval(() => {
+    n = Math.min(pct, n + step);
+    pctEl.textContent = n + '%';
+    if (n >= pct) clearInterval(id);
+  }, 25);
+}
+
+// ═══════════════════════════════════════════════════
+// EVENTS
+// ═══════════════════════════════════════════════════
+document.getElementById('btn-start').addEventListener('click', () => {
+  try { getACtx(); } catch(e) {}
+  startLoading(() => startQuiz(true));
+});
+
+document.getElementById('btn-restart').addEventListener('click', () => {
+  startLoading(() => startQuiz(true));
+});
+
+document.getElementById('btn-home').addEventListener('click', () => {
+  showPage('page-home');
+});
+</script>
 </body>
 </html>
